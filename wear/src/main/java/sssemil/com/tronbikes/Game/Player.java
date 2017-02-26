@@ -23,6 +23,7 @@
 
 package sssemil.com.tronbikes.Game;
 
+import android.content.Context;
 import android.opengl.GLES10;
 import android.util.Log;
 
@@ -32,16 +33,15 @@ import sssemil.com.tronbikes.Sound.SoundManager;
 import sssemil.com.tronbikes.Video.Explosion;
 import sssemil.com.tronbikes.Video.GLTexture;
 import sssemil.com.tronbikes.Video.HUD;
-import sssemil.com.tronbikes.Video.Lighting;
 import sssemil.com.tronbikes.Video.Model;
 import sssemil.com.tronbikes.Video.Segment;
 import sssemil.com.tronbikes.Video.TrailMesh;
 import sssemil.com.tronbikes.Video.Trails_Renderer;
 import sssemil.com.tronbikes.Video.Vec;
 
+import static sssemil.com.tronbikes.Sound.SoundManager.CRASH_SOUND;
+
 public class Player {
-
-
     private static boolean ColourTaken[] = {false, false, false, false, false, false};
     public final float DIRS_X[] = {0.0f, -1.0f, 0.0f, 1.0f};
     public final float DIRS_Y[] = {-1.0f, 0.0f, 1.0f, 0.0f};
@@ -93,6 +93,8 @@ public class Player {
             {30, 100, 200},
             {10, 30, 150}
     };
+    private Context mContext;
+    private SoundManager mSoundManager = null;
     public long TurnTime;
     GLTexture _ExplodeTex;
     private Model Cycle;
@@ -110,9 +112,12 @@ public class Player {
     private float exp_radius;
     private int mPlayerColourIndex;
 
-    public Player(int player_number, float gridSize, Model mesh, HUD hud) {
+    public Player(Context context,SoundManager soundManager, int player_number, float gridSize, Model mesh, HUD hud) {
+        mContext = context;
         int colour = 0;
         boolean done = false;
+
+        mSoundManager = soundManager;
 
         Random rand = new Random();
         Direction = rand.nextInt(3); // accepts values 0..3;
@@ -164,9 +169,7 @@ public class Player {
         float y = getYpos();
 
         if (trailOffset == 3) {
-            for (int i = 0; i < 3; i++) {
-                Trails[i] = Trails[i + 1];
-            }
+            System.arraycopy(Trails, 1, Trails, 0, 3);
             Trails[trailOffset] = new Segment();
             Trails[trailOffset].vStart.v[0] = x;
             Trails[trailOffset].vStart.v[1] = y;
@@ -188,7 +191,7 @@ public class Player {
     }
 
 
-    public void doMovement(long dt, long current_time, Segment walls[], Player plyers[]) {
+    public void doMovement(Context context, long dt, long current_time, Segment walls[], Player plyers[]) {
         float fs;
         float t;
 
@@ -204,8 +207,8 @@ public class Player {
             Trails[trailOffset].vDirection.v[0] += t * DIRS_X[Direction];
             Trails[trailOffset].vDirection.v[1] += t * DIRS_Y[Direction];
 
-            doCrashTestWalls(walls);
-            doCrashTestPlayer(plyers);
+            doCrashTestWalls(context, walls);
+            doCrashTestPlayer(context, plyers);
 
         } else {
             if (trailHeight > 0.0f) {
@@ -217,7 +220,7 @@ public class Player {
         }
     }
 
-    public void drawCycle(long curr_time, long time_dt, Lighting Lights, GLTexture ExplodeTex) {
+    public void drawCycle(long curr_time, long time_dt, GLTexture ExplodeTex) {
         GLES10.glPushMatrix();
         GLES10.glTranslatef(getXpos(), getYpos(), 0.0f);
 
@@ -255,7 +258,7 @@ public class Player {
 
     }
 
-    public void doCrashTestWalls(Segment Walls[]) {
+    public void doCrashTestWalls(Context context, Segment Walls[]) {
         Segment Current = Trails[trailOffset];
         Vec V;
 
@@ -273,12 +276,12 @@ public class Player {
 
                     sb1.append("Player ");
                     sb1.append(Player_num);
-                    sb1.append(" CRASH wall!");
+                    sb1.append(" CRASHED");
                     tronHUD.addLineToConsole(sb1.toString());
 
-                    if (GLTronGame.mPrefs.PlaySFX())
-                        SoundManager.playSound(GLTronGame.CRASH_SOUND, 1.0f);
-
+                    if (GLTronGame.mPrefs.PlaySFX()) {
+                        mSoundManager.playSound(CRASH_SOUND, 1.0f);
+                    }
                     Log.e("GLTRON", "Wall CRASH");
                     break;
                 }
@@ -287,7 +290,7 @@ public class Player {
 
     }
 
-    public void doCrashTestPlayer(Player players[]) {
+    public void doCrashTestPlayer(Context context, Player players[]) {
         int j, k;
         Segment Current = Trails[trailOffset];
         Segment Wall;
@@ -315,15 +318,16 @@ public class Player {
                         Speed = 0.0f;
                         Explode = new Explosion(0.0f);
 
-                        sb1.append("Player ");
+                        sb1.append("PLAYER ");
                         sb1.append(Player_num);
-                        sb1.append(" CRASH trail!");
+                        sb1.append(" CRASHED");
                         tronHUD.addLineToConsole(sb1.toString());
 
                         players[j].addScore(10);
 
-                        if (GLTronGame.mPrefs.PlaySFX())
-                            SoundManager.playSound(GLTronGame.CRASH_SOUND, 1.0f);
+                        if (GLTronGame.mPrefs.PlaySFX()) {
+                            mSoundManager.playSound(CRASH_SOUND, 1.0f);
+                        }
 
                         Log.e("GLTRON", "Wall CRASH");
                         break;
@@ -394,11 +398,7 @@ public class Player {
             s = v1.Dot(v2);
             d = (float) Math.cos((fov / 2) * 2 * Math.PI / 360.0f);
 
-            if (s < d - (Cycle.GetBBoxRadius() * 2.0f)) {
-                retValue = false;
-            } else {
-                retValue = true;
-            }
+            retValue = s >= d - (Cycle.GetBBoxRadius() * 2.0f);
 
         }
 

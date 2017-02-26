@@ -57,7 +57,7 @@ public class OpenGLView extends GLSurfaceView implements GLSurfaceView.Renderer 
 
     public void onResume() {
         Log.v(this.getClass().getName(), "View Resumed");
-        Game.resumeGame();
+        Game.resumeGame(mContext);
     }
 
     public boolean onTouchEvent(final MotionEvent event) {

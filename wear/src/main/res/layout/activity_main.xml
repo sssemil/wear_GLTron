@@ -2,22 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="sssemil.com.tronbikes.MainActivity"
-    tools:deviceIds="wear_round"
-    android:background="@drawable/gltron_bitmap">
-
+    tools:deviceIds="wear_round">
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
         android:id="@+id/start"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="-8dp"
         android:layout_marginLeft="-5dp"
         android:layout_marginRight="-5dp"
-        android:onClick="onStartClick" />
+        android:onClick="onStartClick"
+        android:layout_above="@+id/settings"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -25,11 +22,10 @@
         android:layout_height="wrap_content"
         android:text="Settings"
         android:id="@+id/settings"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
         android:layout_marginLeft="-5dp"
         android:layout_marginRight="-5dp"
-        android:layout_marginBottom="-8dp"
-        android:onClick="onSettingsClick" />
+        android:onClick="onSettingsClick"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

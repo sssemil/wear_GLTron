@@ -24,10 +24,11 @@
 package sssemil.com.tronbikes;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.util.Log;
 
-public class Preferences extends PreferenceActivity {
+import preference.WearPreferenceActivity;
+
+public class Preferences extends WearPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

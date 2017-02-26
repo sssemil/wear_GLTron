@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
+    <PreferenceScreen
         android:key="first_category"
         android:title="@string/player_options">
 
@@ -15,9 +14,9 @@
             android:summary="@string/bike_color_summary"
             android:title="@string/bike_color" />
 
-    </PreferenceCategory>
+    </PreferenceScreen>
 
-    <PreferenceCategory
+    <PreferenceScreen
         android:key="second_category"
         android:title="@string/music_options">
 
@@ -34,10 +33,10 @@
             android:title="@string/sound_effects" />
 
 
-    </PreferenceCategory>
+    </PreferenceScreen>
 
 
-    <PreferenceCategory
+    <PreferenceScreen
         android:key="third_category"
         android:title="@string/graphic_options">
 
@@ -55,9 +54,9 @@
             android:key="cameraPref"
             android:summary="@string/camera_summary"
             android:title="@string/camera" />
-    </PreferenceCategory>
+    </PreferenceScreen>
 
-    <PreferenceCategory
+    <PreferenceScreen
         android:key="fourth_category"
         android:title="@string/game_options">
 
@@ -92,5 +91,5 @@
             android:summary="@string/draw_recognizer_summary"
             android:title="@string/draw_recognizer" />
 
-    </PreferenceCategory>
+    </PreferenceScreen>
 </PreferenceScreen>

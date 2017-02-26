@@ -44,17 +44,15 @@ import sssemil.com.tronbikes.Video.Trails_Renderer;
 import sssemil.com.tronbikes.Video.Video;
 import sssemil.com.tronbikes.Video.WorldGraphics;
 
+import static sssemil.com.tronbikes.Sound.SoundManager.ENGINE_SOUND;
+import static sssemil.com.tronbikes.Sound.SoundManager.RECOGNIZER_SOUND;
+
 
 public class GLTronGame {
 
     public static final int MAX_PLAYERS = 6;
     public static final int OWN_PLAYER = 0;
     public static int mCurrentPlayers = 0;
-    // sound index
-    public static int CRASH_SOUND = 1;
-    public static int ENGINE_SOUND = 2;
-    public static int MUSIC_SOUND = 3;
-    public static int RECOGNIZER_SOUND = 4;
     // Preferences
     public static UserPrefs mPrefs;
     // Define arena setting
@@ -100,18 +98,14 @@ public class GLTronGame {
     private long DtHist[] = new long[MAX_SAMPLES];
     private int DtHead = 0;
     private int DtElements = 0;
+    private SoundManager mSoundManager;
 
     public void initialiseGame() {
         Log.v(this.getClass().getName(), "Initializing the Game");
         int player;
 
         // Load sounds
-        SoundManager.getInstance();
-        SoundManager.initSounds(mContext);
-        SoundManager.addSound(ENGINE_SOUND, R.raw.game_engine);
-        SoundManager.addSound(CRASH_SOUND, R.raw.game_crash);
-        SoundManager.addSound(RECOGNIZER_SOUND, R.raw.game_recognizer);
-        SoundManager.addMusic(R.raw.song_revenge_of_cats);
+        if(mSoundManager==null) mSoundManager = SoundManager.getInstance(mContext);
 
         // Load HUD
         tronHUD = new HUD(mContext);
@@ -130,7 +124,7 @@ public class GLTronGame {
         TrailRenderer = new Trails_Renderer(mContext);
 
         for (player = 0; player < mCurrentPlayers; player++) {
-            Players[player] = new Player(player, mCurrentGridSize, LightBike, tronHUD);
+            Players[player] = new Player(mContext, mSoundManager, player, mCurrentGridSize, LightBike, tronHUD);
         }
 
         mRecognizer = new Recognizer(mCurrentGridSize);
@@ -147,9 +141,9 @@ public class GLTronGame {
 
         // Initialise sounds
         if (mPrefs.PlayMusic())
-            SoundManager.playMusic(true);
+            mSoundManager.playMusic(true);
         if (mPrefs.PlaySFX())
-            SoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
+            mSoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
 
         ResetTime();
 
@@ -191,7 +185,7 @@ public class GLTronGame {
             }
 
             for (plyr = 0; plyr < mPrefs.NumberOfPlayers(); plyr++) {
-                Players[plyr] = new Player(plyr, mCurrentGridSize, LightBike, tronHUD);
+                Players[plyr] = new Player(mContext, mSoundManager, plyr, mCurrentGridSize, LightBike, tronHUD);
                 Players[plyr].setSpeed(mPrefs.Speed());
             }
 
@@ -200,13 +194,13 @@ public class GLTronGame {
             tronHUD.resetConsole();
             Cam = new Camera(Players[OWN_PLAYER], CamType.E_CAM_TYPE_CIRCLING);
 
-            SoundManager.stopSound(ENGINE_SOUND); // ensure sound is stopped before playing again.
-            SoundManager.stopSound(RECOGNIZER_SOUND);
+            mSoundManager.stopSound(ENGINE_SOUND); // ensure sound is stopped before playing again.
+            mSoundManager.stopSound(RECOGNIZER_SOUND);
 
             tronHUD.displayInstr(true);
 
             if (mPrefs.PlaySFX())
-                SoundManager.playSoundLoop(ENGINE_SOUND, 1.0f);
+                mSoundManager.playSoundLoop(ENGINE_SOUND, 1.0f);
 
             boInitialState = true;
             boProcessReset = false;
@@ -219,7 +213,7 @@ public class GLTronGame {
 
         // Manage sounds
         if (Players[OWN_PLAYER].getSpeed() == 0.0f) {
-            SoundManager.stopSound(ENGINE_SOUND);
+            mSoundManager.stopSound(ENGINE_SOUND);
             mEngineStartTime = 0;
             mEngineSoundModifier = 1.0f;
         } else if (!boInitialState) {
@@ -228,7 +222,7 @@ public class GLTronGame {
                     if (mEngineStartTime != 0) {
                         if ((TimeCurrent + 1000) > mEngineStartTime) {
                             mEngineSoundModifier += 0.01f;
-                            SoundManager.changeRate(ENGINE_SOUND, mEngineSoundModifier);
+                            mSoundManager.changeRate(ENGINE_SOUND, mEngineSoundModifier);
                         }
                     }
                 }
@@ -248,42 +242,41 @@ public class GLTronGame {
     // hooks for android pausing thread
     public void pauseGame() {
         Log.v(this.getClass().getName(), "Signal received to pause the game");
-        SoundManager.getInstance();
-        SoundManager.globalPauseSound();
+        mSoundManager.globalPauseSound();
         Log.v(this.getClass().getName(), "Signal received to pause the game has been processed");
     }
 
     // hooks for android resuming thread
-    public void resumeGame() {
+    public void resumeGame(Context context) {
         Log.v(this.getClass().getName(), "Signal received to resume the game");
-        SoundManager.getInstance();
-        SoundManager.globalResumeSound();
+        if(mSoundManager==null) mSoundManager = SoundManager.getInstance(context);
+        mSoundManager.globalResumeSound();
 
         if (mPrefs != null) {
             mPrefs.ReloadPrefs();
 
-            SoundManager.stopSound(RECOGNIZER_SOUND);
+            mSoundManager.stopSound(RECOGNIZER_SOUND);
 
             // Update options
             if (!boInitialState) {
                 Cam.updateType(mPrefs.CameraType());
                 if (mPrefs.PlaySFX() && mPrefs.DrawRecognizer())
-                    SoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
+                    mSoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
             } else {
                 boProcessReset = true;
             }
 
             if (mPrefs.PlayMusic())
-                SoundManager.playMusic(true);
+                mSoundManager.playMusic(true);
             else
-                SoundManager.stopMusic();
+                mSoundManager.stopMusic();
 
-            SoundManager.stopSound(ENGINE_SOUND);
+            mSoundManager.stopSound(ENGINE_SOUND);
 
             if (mPrefs.PlaySFX())
-                SoundManager.playSoundLoop(ENGINE_SOUND, mEngineSoundModifier);
+                mSoundManager.playSoundLoop(ENGINE_SOUND, mEngineSoundModifier);
             else
-                SoundManager.stopSound(ENGINE_SOUND);
+                mSoundManager.stopSound(ENGINE_SOUND);
 
 
             ResetTime();
@@ -365,13 +358,13 @@ public class GLTronGame {
             if (boInitialState) {
                 // Change the camera and start movement.
                 Cam = new Camera(Players[OWN_PLAYER], mPrefs.CameraType());
-                SoundManager.stopMusic();
+                mSoundManager.stopMusic();
 
                 if (mPrefs.PlayMusic())
-                    SoundManager.playMusic(true);
+                    mSoundManager.playMusic(true);
 
                 if (mPrefs.PlaySFX() && mPrefs.DrawRecognizer())
-                    SoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
+                    mSoundManager.playSoundLoop(RECOGNIZER_SOUND, 1.0f);
 
                 tronHUD.displayInstr(false);
                 boInitialState = false;
@@ -461,7 +454,7 @@ public class GLTronGame {
 
         if (!boInitialState) {
             for (player = 0; player < mCurrentPlayers; player++) {
-                Players[player].doMovement(TimeDt, TimeCurrent, Walls, Players);
+                Players[player].doMovement(mContext, TimeDt, TimeCurrent, Walls, Players);
                 //check win lose should be in game logic not render - FIXME
                 if (player == OWN_PLAYER) {
                     if (Players[player].getSpeed() == 0.0f)
@@ -517,7 +510,7 @@ public class GLTronGame {
 
         for (player = 0; player < mCurrentPlayers; player++) {
             if (player == 0 || Players[player].isVisible(Cam))
-                Players[player].drawCycle(TimeCurrent, TimeDt, Lights, ExplodeTex);
+                Players[player].drawCycle(TimeCurrent, TimeDt, ExplodeTex);
 
             Players[player].drawTrails(TrailRenderer, Cam);
         }

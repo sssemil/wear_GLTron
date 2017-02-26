@@ -24,60 +24,80 @@
 package sssemil.com.tronbikes.Sound;
 
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
+import android.media.*;
+import android.util.Log;
+import sssemil.com.tronbikes.R;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class SoundManager {
 
+    // sound index
+    public static int CRASH_SOUND = 1;
+    public static int ENGINE_SOUND = 2;
+    public static int MUSIC_SOUND = 3;
+    public static int RECOGNIZER_SOUND = 4;
+
     private static final int MAX_SOUNDS = 10;
     // music
-    private static MediaPlayer mPlayer;
+    private MediaPlayer mPlayer;
     // sound effects
-    private static SoundManager _instance;
-    private static SoundPool mSoundPool;
-    private static HashMap<Integer, Integer> mSoundPoolMap;
-    private static AudioManager mAudioManager;
-    private static Context mContext;
+    private SoundPool mSoundPool;
+    private HashMap<Integer, Integer> mSoundPoolMap;
+    private AudioManager mAudioManager;
+    private Context mContext;
     private static int MAX_INDEX = 10;
 
-    private static int mIndexToStream[] = new int[MAX_INDEX];
+    private int mIndexToStream[] = new int[MAX_INDEX];
 
+    private boolean mSupportsAudio = true;
 
-    private SoundManager() {
+    private SoundManager(Context context) {
+        mContext = context;
+        mSoundPool = new SoundPool(MAX_SOUNDS, AudioManager.STREAM_MUSIC, 0);
+        mSoundPoolMap = new HashMap<Integer, Integer>();
+        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            AudioDeviceInfo[] adi = mAudioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+            if (adi.length == 0) {
+                mSupportsAudio = false;
+            } else {
+                for (AudioDeviceInfo audioDeviceInfo : adi) {
+                    Log.e((String) audioDeviceInfo.getProductName(), String.valueOf(audioDeviceInfo.getId()));
+                }
+            }
+        }
+        addSound(ENGINE_SOUND, R.raw.game_engine);
+        addSound(CRASH_SOUND, R.raw.game_crash);
+        addSound(RECOGNIZER_SOUND, R.raw.game_recognizer);
+        addMusic(R.raw.song_revenge_of_cats);
     }
 
     /*
      * Requests the instance if the sound manager and creates it
      * if it does not exist
      */
-    static synchronized public SoundManager getInstance() {
-        if (_instance == null)
-            _instance = new SoundManager();
-        return _instance;
+    static synchronized public SoundManager getInstance(Context context) {
+        return new SoundManager(context);
     }
 
-    public static void initSounds(Context theContext) {
-        mContext = theContext;
-        mSoundPool = new SoundPool(MAX_SOUNDS, AudioManager.STREAM_MUSIC, 0);
-        mSoundPoolMap = new HashMap<Integer, Integer>();
-        mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+    private void addSound(int Index, int SoundID) {
+        if (mSupportsAudio) {
+            mSoundPoolMap.put(Index, mSoundPool.load(mContext, SoundID, 1));
+        }
     }
 
-    public static void addSound(int Index, int SoundID) {
-        mSoundPoolMap.put(Index, mSoundPool.load(mContext, SoundID, 1));
-    }
-
-    public static void addMusic(int MusicID) {
+    private void addMusic(int MusicID) {
         // limited to one music stream FIXME
-        mPlayer = MediaPlayer.create(mContext, MusicID);
+        if (mSupportsAudio) {
+            mPlayer = MediaPlayer.create(mContext, MusicID);
+        }
     }
 
-    public static void playMusic(boolean boLoop) {
-        if (mPlayer != null) {
+    public void playMusic(boolean boLoop) {
+        if (mSupportsAudio && mPlayer != null) {
             float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
@@ -87,66 +107,75 @@ public class SoundManager {
         }
     }
 
-    public static void stopMusic() {
-        if (mPlayer != null) {
-            if (mPlayer.isPlaying()) {
-                mPlayer.stop();
-                try {
-                    mPlayer.prepare();
-                    mPlayer.seekTo(0);
-                } catch (IOException e) {
-                    // do nothing here FIXME
-                }
+
+    public void stopMusic() {
+        if (mSupportsAudio && mPlayer != null && mPlayer.isPlaying()) {
+            mPlayer.stop();
+            try {
+                mPlayer.prepare();
+                mPlayer.seekTo(0);
+            } catch (IOException e) {
+                // do nothing here FIXME
             }
         }
     }
 
-    public static void playSound(int index, float speed) {
-        float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        streamVolume *= 0.5;
-        mIndexToStream[index] = mSoundPool.play(mSoundPoolMap.get(index), streamVolume, streamVolume, 1, 0, speed);
+    public void playSound(int index, float speed) {
+        if (mSupportsAudio) {
+            float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            streamVolume *= 0.5;
+            mIndexToStream[index] = mSoundPool.play(mSoundPoolMap.get(index), streamVolume, streamVolume,1,0, speed);
+        }
     }
 
-    public static void playSoundLoop(int index, float speed) {
-        float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        streamVolume *= 0.5;
-        mIndexToStream[index] = mSoundPool.play(mSoundPoolMap.get(index), streamVolume, streamVolume, 1, -1, speed);
+    public void playSoundLoop(int index, float speed) {
+        if (mSupportsAudio) {
+            float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            streamVolume *= 0.5;
+            mIndexToStream[index] = mSoundPool.play(mSoundPoolMap.get(index), streamVolume, streamVolume, 1, -1, speed);
+        }
     }
 
-    public static void stopSound(int index) {
+    public void stopSound(int index) {
         //mSoundPool.stop(mSoundPoolMap.get(index));
-        mSoundPool.stop(mIndexToStream[index]);
+        if (mSupportsAudio) {
+            mSoundPool.stop(mIndexToStream[index]);
+        }
     }
 
-    public static void changeRate(int index, float rate) {
+    public void changeRate(int index, float rate) {
         //mSoundPool.setRate(mSoundPoolMap.get(index), rate);
-        mSoundPool.setRate(mIndexToStream[index], rate);
+        if (mSupportsAudio) {
+            mSoundPool.setRate(mIndexToStream[index], rate);
+        }
     }
 
-    public static void globalPauseSound() {
-        if (mSoundPool != null)
-            mSoundPool.autoPause();
+    public void globalPauseSound() {
+        if (mSupportsAudio) {
+            if (mSoundPool != null)
+                mSoundPool.autoPause();
 
-        if (mPlayer != null && mPlayer.isPlaying())
-            mPlayer.pause();
+            if (mPlayer != null && mPlayer.isPlaying())
+                mPlayer.pause();
+        }
     }
 
-    public static void globalResumeSound() {
-        if (mSoundPool != null)
-            mSoundPool.autoResume();
+    public void globalResumeSound() {
+        if (mSupportsAudio) {
+            if (mSoundPool != null)
+                mSoundPool.autoResume();
 
-        if (mPlayer != null)
-            mPlayer.start();
+            if (mPlayer != null)
+                mPlayer.start();
+        }
     }
 
-    public static void cleanup() {
+    public void cleanup() {
         mSoundPool.release();
         mSoundPool = null;
         mSoundPoolMap.clear();
         mAudioManager.unloadSoundEffects();
-        _instance = null;
     }
-
 }
