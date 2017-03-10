@@ -8,8 +8,8 @@ android {
         applicationId "sssemil.com.tronbikes"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 5
-        versionName "1.3"
+        versionCode 7
+        versionName "1.4"
         // Enabling multidex support.
         multiDexEnabled true
     }

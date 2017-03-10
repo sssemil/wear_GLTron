@@ -43,6 +43,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/wear1Debug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/wear1Debug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/wear1Debug/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/wear1/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/wear1/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/wear1/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/wear1/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/wear1/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/wear1/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/wear1/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/assets" type="java-test-resource" />
@@ -51,13 +58,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testWear1Debug/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/wear1/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/wear1/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/wear1/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/wear1/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/wear1/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/wear1/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/wear1/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/wear1/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/wear1/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/wear1/assets" type="java-resource" />

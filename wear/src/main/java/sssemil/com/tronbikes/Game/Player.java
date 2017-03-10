@@ -112,7 +112,7 @@ public class Player {
     private float exp_radius;
     private int mPlayerColourIndex;
 
-    public Player(Context context,SoundManager soundManager, int player_number, float gridSize, Model mesh, HUD hud) {
+    public Player(Context context, SoundManager soundManager, int player_number, float gridSize, Model mesh, HUD hud) {
         mContext = context;
         int colour = 0;
         boolean done = false;

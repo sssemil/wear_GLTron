@@ -121,7 +121,7 @@ public class SoundManager {
     }
 
     public void playSound(int index, float speed) {
-        if (mSupportsAudio) {
+        if (mSupportsAudio && mSoundPool!=null) {
             float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             streamVolume *= 0.5;
@@ -130,7 +130,7 @@ public class SoundManager {
     }
 
     public void playSoundLoop(int index, float speed) {
-        if (mSupportsAudio) {
+        if (mSupportsAudio && mSoundPool!=null) {
             float streamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             streamVolume /= mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             streamVolume *= 0.5;
