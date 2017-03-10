@@ -88,7 +88,7 @@ public class UserPrefs {
         mSFX = prefs.getBoolean("sfxOption", true);
         mFPS = prefs.getBoolean("fpsOption", false);
         mNumOfPlayers = Integer.valueOf(prefs.getString("playerNumber", "4"));
-        gridIndex = Integer.valueOf(prefs.getString("arenaSize", "1"));
+        gridIndex = Integer.valueOf(prefs.getString("arenaSize", "2"));
         mGridSize = C_GRID_SIZES[gridIndex];
         speedIndex = Integer.valueOf(prefs.getString("gameSpeed", "1"));
         mSpeed = C_SPEED[speedIndex];

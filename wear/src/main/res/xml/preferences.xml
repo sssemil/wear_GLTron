@@ -21,13 +21,13 @@
         android:title="@string/music_options">
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="musicOption"
             android:summary="@string/music_summary"
             android:title="@string/music" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="sfxOption"
             android:summary="@string/sound_effects_summary"
             android:title="@string/sound_effects" />
@@ -42,13 +42,13 @@
 
 
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="fpsOption"
             android:summary="@string/fps_counter_summary"
             android:title="@string/fps_counter" />
 
         <ListPreference
-            android:defaultValue="0"
+            android:defaultValue="1"
             android:entries="@array/cameraEntries"
             android:entryValues="@array/cameraValues"
             android:key="cameraPref"
@@ -61,7 +61,7 @@
         android:title="@string/game_options">
 
         <ListPreference
-            android:defaultValue="3"
+            android:defaultValue="4"
             android:entries="@array/playerNumEntries"
             android:entryValues="@array/playerNumValues"
             android:key="playerNumber"
@@ -78,7 +78,7 @@
             android:title="@string/arena_size" />
 
         <ListPreference
-            android:defaultValue="3"
+            android:defaultValue="1"
             android:entries="@array/gameSpeedEntries"
             android:entryValues="@array/gameSpeedValues"
             android:key="gameSpeed"
@@ -86,7 +86,7 @@
             android:title="@string/game_speed" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="drawRecog"
             android:summary="@string/draw_recognizer_summary"
             android:title="@string/draw_recognizer" />
