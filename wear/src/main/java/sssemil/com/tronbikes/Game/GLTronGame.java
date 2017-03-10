@@ -213,7 +213,9 @@ public class GLTronGame {
 
         // Manage sounds
         if (Players[OWN_PLAYER].getSpeed() == 0.0f) {
-            mSoundManager.stopSound(ENGINE_SOUND);
+            if(mSoundManager!=null) {
+                mSoundManager.stopSound(ENGINE_SOUND);
+            }
             mEngineStartTime = 0;
             mEngineSoundModifier = 1.0f;
         } else if (!boInitialState) {
@@ -243,6 +245,8 @@ public class GLTronGame {
     public void pauseGame() {
         Log.v(this.getClass().getName(), "Signal received to pause the game");
         mSoundManager.globalPauseSound();
+        mSoundManager.cleanup();
+        mSoundManager = null;
         Log.v(this.getClass().getName(), "Signal received to pause the game has been processed");
     }
 
